@@ -1,5 +1,10 @@
-use checkmeout;
+use checkmeout::{git::Git, prompt::Prompt};
 
 fn main() {
-    let test = checkmeout::git::Git::new(["branch","-a"].to_vec()).exec();
+    let fetch = Git::new(vec!["fetch", "--prune", "--all"]).exec();
+
+    println!("{}", fetch.out);
+
+    let branches = Git::new(vec!["branch", "-a"]).exec();
+    println!("{:?}", branches)
 }

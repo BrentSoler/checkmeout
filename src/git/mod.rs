@@ -1,22 +1,29 @@
 use std::process::{self, Command};
 
+#[derive(Debug)]
 pub struct Git {
-    out: Option<String>,
-    err: Option<String>,
+    pub out: String,
+    pub err: String,
 }
 
 impl Git {
-    pub fn new(args: Vec<&str>) -> GitBuilder {
-        return GitBuilder { args };
+    pub fn new<'a>(args: [&'a str]) -> GitBuilder {
+        return GitBuilder {
+            args,
+            out: None,
+            err: None,
+        };
     }
 }
 
 pub struct GitBuilder<'a> {
-    args: Vec<&'a str>,
+    args: [&'a str],
+    out: Option<String>,
+    err: Option<String>,
 }
 
 impl<'a> GitBuilder<'a> {
-    pub fn exec(&self) {
+    pub fn exec(&self) -> Self {
         let cmd = Command::new("git")
             .args(&self.args)
             .output()
@@ -24,6 +31,11 @@ impl<'a> GitBuilder<'a> {
                 println!("Error: {}", err);
                 process::exit(0);
             });
-        println!("{:?}", cmd)
+
+        return Self {
+            args: self.args,
+            out: Some(String::from_utf8(cmd.stdout).unwrap()),
+            err: Some(String::from_utf8(cmd.stderr).unwrap()),
+        };
     }
 }
