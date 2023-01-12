@@ -1,4 +1,5 @@
-use std::process::{self, Command};
+pub mod builder;
+use builder::GitBuilder;
 
 #[derive(Debug)]
 pub struct Git {
@@ -7,35 +8,21 @@ pub struct Git {
 }
 
 impl Git {
-    pub fn new<'a>(args: [&'a str]) -> GitBuilder {
+    pub fn new(args: Vec<&str>) -> GitBuilder {
         return GitBuilder {
             args,
             out: None,
             err: None,
         };
     }
-}
 
-pub struct GitBuilder<'a> {
-    args: [&'a str],
-    out: Option<String>,
-    err: Option<String>,
-}
-
-impl<'a> GitBuilder<'a> {
-    pub fn exec(&self) -> Self {
-        let cmd = Command::new("git")
-            .args(&self.args)
-            .output()
-            .unwrap_or_else(|err| {
-                println!("Error: {}", err);
-                process::exit(0);
-            });
-
-        return Self {
-            args: self.args,
-            out: Some(String::from_utf8(cmd.stdout).unwrap()),
-            err: Some(String::from_utf8(cmd.stderr).unwrap()),
-        };
+    pub fn parse_branch(&self) -> Vec<&str> {
+        return self
+            .out
+            .trim()
+            .split("\n")
+            .into_iter()
+            .map(|branch| branch.trim())
+            .collect();
     }
 }
