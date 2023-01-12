@@ -1,6 +1,18 @@
 use checkmeout::{git::Git, prompt::Prompt};
+use colored::Colorize;
 
 fn main() {
+    println!(
+        "{}\n",
+        "
+ ██████ ██   ██ ███████  ██████ ██   ██ ███    ███ ███████  ██████  ██    ██ ████████ 
+██      ██   ██ ██      ██      ██  ██  ████  ████ ██      ██    ██ ██    ██    ██    
+██      ███████ █████   ██      █████   ██ ████ ██ █████   ██    ██ ██    ██    ██    
+██      ██   ██ ██      ██      ██  ██  ██  ██  ██ ██      ██    ██ ██    ██    ██    
+ ██████ ██   ██ ███████  ██████ ██   ██ ██      ██ ███████  ██████   ██████     ██"
+            .green()
+    );
+
     let fetch = Git::new(vec!["fetch", "--prune", "--all"])
         .exec()
         .handle_err()
@@ -30,13 +42,13 @@ fn main() {
             println!("{}", pull.out);
         }
 
-        println!("{:?}", switch_branch);
+        println!("{}", switch_branch.out);
     } else {
         let checkout = Git::new(vec!["checkout", &selected_branch.input])
             .exec()
             .handle_err()
             .build();
 
-        println!("{:?}", checkout);
+        println!("{}", checkout.out);
     }
 }
